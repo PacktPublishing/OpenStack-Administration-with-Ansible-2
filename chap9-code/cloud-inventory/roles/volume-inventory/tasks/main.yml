@@ -1,0 +1,16 @@
+---
+- name: Create working directory
+  file: path={{ REPORT_DIR }} state=directory
+  ignore_errors: yes
+
+- name: Copy the volume_report script
+  copy: src=volume_report.sql dest=/usr/share mode=0755
+  
+- name: Add report header
+  shell: ( echo "+--------------------------+"; echo "| Cloud Volume Report      |"; echo "+--------------------------+"; ) >> {{ REPORT_DIR }}/os_report_{{ lookup('pipe', 'date +%Y%m%d') }}.log 
+
+- name: Execute volume report
+  shell: chdir=/usr/bin mysql -u root --password={{ MYSQLPASS }} --table < /usr/share/volume_report.sql >> {{ REPORT_DIR }}/os_report_{{ lookup('pipe', 'date +%Y%m%d') }}.log
+  
+- name: Retrieve completed cloud report file
+  fetch: src={{ REPORT_DIR }}/os_report_{{ lookup('pipe', 'date +%Y%m%d') }}.log dest={{ REPORT_DEST }} flat=yes

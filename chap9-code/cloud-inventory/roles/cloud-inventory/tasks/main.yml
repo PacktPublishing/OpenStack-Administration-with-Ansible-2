@@ -1,0 +1,13 @@
+---
+- name: Create working directory
+  file: path="{{ REPORT_DIR }}" state=directory
+  ignore_errors: yes
+
+- name: Copy the cloud_report script
+  copy: src=cloud_report.sql dest=/usr/share mode=0755
+
+- name: Add report header
+  shell: ( echo "+------------------------------------+"; echo "| {{ COMPANY }} Cloud Report         |"; echo "| Created at {{ lookup('pipe', 'date +%Y-%m-%d%t%X') }}  |"; echo "+------------------------------------+"; ) >> {{ REPORT_DIR }}/os_report_{{ lookup('pipe', 'date +%Y%m%d') }}.log 
+
+- name: Execute cloud report
+  shell: chdir=/usr/bin mysql -u root --password={{ MYSQLPASS }} --table < /usr/share/cloud_report.sql >> {{ REPORT_DIR }}/os_report_{{ lookup('pipe', 'date +%Y%m%d') }}.log

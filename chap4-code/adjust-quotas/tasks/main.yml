@@ -1,0 +1,8 @@
+---
+
+- name: Adjust tenant quotas
+  command: openstack --os-cloud="{{ CLOUD_NAME }}"
+           quota set "{{ item.1 }}" "{{ item.0 }}"
+  with_together:
+    - "{{qoptions}}"
+    - "{{tenantname}}"

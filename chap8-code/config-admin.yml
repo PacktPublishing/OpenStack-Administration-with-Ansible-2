@@ -1,0 +1,8 @@
+---
+# This playbook used to demo OpenStack Juno user, role and project features. 
+
+- hosts: util_container
+  remote_user: root
+  become: true
+  roles:
+    - config-admin-region

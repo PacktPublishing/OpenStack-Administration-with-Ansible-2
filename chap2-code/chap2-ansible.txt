@@ -1,0 +1,40 @@
+## Playbook examples
+
+---# Sample playbooks structure/syntax.- hosts: dbservers  remote_user: root  become: true  roles:    - mysql-install
+
+---# Sample simple playbooks structure/syntax - name: Install MySQL Playbook  hosts: dbservers  remote_user: root  become: true  tasks:    - name: Install MySQL      apt: name={{item}} state=present      with_items:       - libselinux-python       - mysql       - mysql-server       - MySQL-python    - name: Copying my.cnf configuration file      template: src=cust_my.cnf dest=/etc/my.cnf mode=0755    - name: Prep MySQL db      command: chdir=/usr/bin mysql_install_db    - name: Enable MySQL to be started at boot      service: name=mysqld enabled=yes state=restarted    - name: Prep MySQL db      command: chdir=/usr/bin mysqladmin -u root password 'passwd'
+
+
+## Role examples
+
+---- name: Install MySQL  apt: name={{item}} state=present  with_items:   - libselinux-python   - mysql   - mysql-server   - MySQL-python- name: Copying my.cnf configuration file  template: src=cust_my.cnf dest=/etc/my.cnf mode=0755- name: Prep MySQL db  command: chdir=/usr/bin mysql_install_db- name: Enable MySQL to be started at boot  service: name=mysqld enabled=yes state=restarted- name: Prep MySQL db  command: chdir=/usr/bin mysqladmin -u root password 'passwd'
+
+
+## Variable examples
+
+- name: Copying my.cnf configuration file
+  template: src=cust_my.cnf dest={{ CONFIG_LOC }} mode=0755
+
+##
+
+---
+# Sample simple playbooks structure/syntax 
+
+- name: Install MySQL Playbook
+  hosts: dbservers
+...
+  vars:
+    CONFIG_LOC: /etc/my.cnf
+...
+
+## Registering variables
+
+- name: Check Keystone process
+  shell: ps -ef | grep keystone
+  register: keystone_check
+
+## Blocks
+
+---# Sample simple playbooks structure/syntax - name: Install MySQL Playbook  hosts: dbservers  tasks:    - block:      - apt: name={{item}} state=present        with_items:          - libselinux-python          - mysql          - mysql-server          - MySQL-python      - template: src=cust_my.cnf dest=/etc/my.cnf mode=0755      - command: chdir=/usr/bin mysql_install_db      - service: name=mysqld enabled=yes state=restarted      - command: chdir=/usr/bin mysqladmin -u root password 'passwd'          when: ansible_distribution == 'Ubuntu'    remote_user: root    become: true## Strategy
+
+---# Sample simple playbooks structure/syntax - name: Install MySQL Playbook  hosts: dbservers  strategy: free  tasks:  ...

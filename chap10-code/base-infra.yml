@@ -1,0 +1,9 @@
+---
+# This playbook deploys components needed for the Infrastructure hosts. 
+
+- hosts: hosts
+  remote_user: root
+  become: true
+  roles:
+    - create-nagios-user
+    - infra-plugin-config

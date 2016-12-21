@@ -1,0 +1,13 @@
+---
+
+- name: Remove installation directories and files
+  command: rm -r /var/www/html/nconf/INSTALL
+
+- name: Remove installation directories and files
+  command: rm /var/www/html/nconf/INSTALL.php
+  
+- name: Remove installation directories and files
+  command: rm -r /var/www/html/nconf/UPDATE
+  
+- name: Remove installation directories and files
+  command: rm /var/www/html/nconf/UPDATE.php

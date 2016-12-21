@@ -1,0 +1,8 @@
+[localhost]
+localhost ansible_connection=local
+
+[util_container]
+172.29.238.245
+
+[galera_container]
+172.29.238.248

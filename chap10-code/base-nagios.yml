@@ -1,0 +1,9 @@
+---
+# This playbook deploys components needed for Nagios. 
+
+- hosts: nagios-server
+  remote_user: root
+  become: true
+  roles:
+    - install-nagios
+    - nagios-plugins

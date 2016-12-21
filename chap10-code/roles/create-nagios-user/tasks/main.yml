@@ -1,0 +1,14 @@
+---
+
+- name: Create Nagios user
+  user: name="{{ USER }}" comment="{{ USER }} User" 
+  ignore_errors: yes
+
+- name: Create user .ssh directory 
+  file: path=/home/"{{ USER }}"/.ssh state=directory
+
+- name: Copy authorized keys
+  copy: src=nagios-key dest=/home/"{{ USER }}"/.ssh/authorized_keys mode=0644
+
+- name: Set home directory permissions 
+  file: path=/home/"{{ USER }}" owner="{{ USER }}" group="{{ USER }}" recurse=yes

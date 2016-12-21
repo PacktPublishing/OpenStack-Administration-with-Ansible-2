@@ -1,0 +1,7 @@
+# Here are variables related to the install
+
+USER: nagios
+SNMP_COMMUNITY: osad
+SYS_LOCATION: SAT
+SYS_CONTACT: support@rackspace.com
+

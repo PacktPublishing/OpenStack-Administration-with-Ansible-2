@@ -1,0 +1,75 @@
+# The next set of steps will be to configure each OpenStack service on that region to authenticate against the Admin Region identity service, instead of the local regions identity service.  Please be patient as this part is tedious and requires focused attention.
+
+#Each OpenStack service is located in a separate LXC container.  You will be tasked with connecting to each container and making conf file updates to adjust the URL it will use to authenticate against.  After each conf file is updated, the corresponding OpenStack service will need to be restarted.
+
+#Highly recommended that you do a find and replace for the following phrase “<admin region IP>” with the IP address of your admin region.
+
+# Change into OSA playbooks directory
+cd /opt/openstack-ansible/playbooks
+
+## Glance
+
+ansible glance_container -m shell -a "sed -i 's+^auth_url = http://172.30.238.2:35357+auth_url = http://<admin region IP>:35357+' /etc/glance/glance-api.conf"
+ansible glance_container -m shell -a "sed -i 's+^auth_url = http://172.30.238.2:35357+auth_url = http://<admin region IP>:35357+' /etc/glance/glance-registry.conf"
+
+ansible glance_container -m shell -a "sed -i 's+^auth_url = http://172.30.238.2:5000/v3+auth_url = http://<admin region IP>:5000/v3+' /etc/glance/glance-cache.conf"
+
+ansible glance_container -m shell -a "sed -i 's+^auth_uri = http://172.30.238.2:5000+auth_uri = http://<admin region IP>:5000+' /etc/glance/glance-api.conf"
+ansible glance_container -m shell -a "sed -i 's+^auth_uri = http://172.30.238.2:5000+auth_uri = http://<admin region IP>:5000+' /etc/glance/glance-registry.conf"
+
+ansible glance_container -m shell -a "service glance-api restart"
+ansible glance_container -m shell -a "service glance-registry restart"
+
+## Nova
+ansible nova_api_metadata_container -m shell -a "sed -i 's+^auth_url = http://172.30.238.2:35357/v3+auth_url = http://<admin region IP>:35357/v3+' /etc/nova/nova.conf"
+ansible nova_api_os_compute_container -m shell -a "sed -i 's+^auth_url = http://172.30.238.2:35357/v3+auth_url = http://<admin region IP>:35357/v3+' /etc/nova/nova.conf"
+ansible nova_cert_container -m shell -a "sed -i 's+^auth_url = http://172.30.238.2:35357/v3+auth_url = http://<admin region IP>:35357/v3+' /etc/nova/nova.conf"
+ansible nova_conductor_container -m shell -a "sed -i 's+^auth_url = http://172.30.238.2:35357/v3+auth_url = http://<admin region IP>:35357/v3+' /etc/nova/nova.conf"
+ansible nova_console_container -m shell -a "sed -i 's+^auth_url = http://172.30.238.2:35357/v3+auth_url = http://<admin region IP>:35357/v3+' /etc/nova/nova.conf"
+ansible nova_scheduler_container -m shell -a "sed -i 's+^auth_url = http://172.30.238.2:35357/v3+auth_url = http://<admin region IP>:35357/v3+' /etc/nova/nova.conf"
+ansible compute_hosts -m shell -a "sed -i 's+^auth_url = http://172.30.238.2:35357/v3+auth_url = http://<admin region IP>:35357/v3+' /etc/nova/nova.conf"
+
+ansible nova_api_metadata_container -m shell -a "sed -i 's+^auth_url = http://172.30.238.2:35357+auth_url = http://<admin region IP>:35357+' /etc/nova/nova.conf"
+ansible nova_api_os_compute_container -m shell -a "sed -i 's+^auth_url = http://172.30.238.2:35357+auth_url = http://<admin region IP>:35357+' /etc/nova/nova.conf"
+ansible nova_cert_container -m shell -a "sed -i 's+^auth_url = http://172.30.238.2:35357+auth_url = http://<admin region IP>:35357+' /etc/nova/nova.conf"
+ansible nova_conductor_container -m shell -a "sed -i 's+^auth_url = http://172.30.238.2:35357+auth_url = http://<admin region IP>:35357+' /etc/nova/nova.conf"
+ansible nova_console_container -m shell -a "sed -i 's+^auth_url = http://172.30.238.2:35357+auth_url = http://<admin region IP>:35357+' /etc/nova/nova.conf"
+ansible nova_scheduler_container -m shell -a "sed -i 's+^auth_url = http://172.30.238.2:35357+auth_url = http://<admin region IP>:35357+' /etc/nova/nova.conf"
+ansible compute_hosts -m shell -a "sed -i 's+^auth_url = http://172.30.238.2:35357+auth_url = http://<admin region IP>:35357+' /etc/nova/nova.conf"
+
+ansible nova_api_metadata_container -m shell -a "sed -i 's+^auth_uri = http://172.30.238.2:5000+auth_uri = http://<admin region IP>:5000+' /etc/nova/nova.conf"
+ansible nova_api_os_compute_container -m shell -a "sed -i 's+^auth_uri = http://172.30.238.2:5000+auth_uri = http://<admin region IP>:5000+' /etc/nova/nova.conf"
+ansible nova_cert_container -m shell -a "sed -i 's+^auth_uri = http://172.30.238.2:5000+auth_uri = http://<admin region IP>:5000+' /etc/nova/nova.conf"
+ansible nova_conductor_container -m shell -a "sed -i 's+^auth_uri = http://172.30.238.2:5000+auth_uri = http://<admin region IP>:5000+' /etc/nova/nova.conf"
+ansible nova_console_container -m shell -a "sed -i 's+^auth_uri = http://172.30.238.2:5000+auth_uri = http://<admin region IP>:5000+' /etc/nova/nova.conf"
+ansible nova_scheduler_container -m shell -a "sed -i 's+^auth_uri = http://172.30.238.2:5000+auth_uri = http://<admin region IP>:5000+' /etc/nova/nova.conf"
+ansible compute_hosts -m shell -a "sed -i 's+^auth_uri = http://172.30.238.2:5000+auth_uri = http://<admin region IP>:5000+' /etc/nova/nova.conf"
+
+ansible nova_api_metadata_container -m shell -a "service nova-api-metadata restart"
+ansible nova_api_os_compute_container -m shell -a "service nova-api-os-compute restart"
+ansible nova_cert_container -m shell -a "service nova-cert restart"
+ansible nova_conductor_container -m shell -a "service nova-conductor restart"
+ansible nova_console_container -m shell -a "service nova-consoleauth restart"
+ansible nova_console_container -m shell -a "service nova-spicehtml5proxy restart"
+ansible nova_scheduler_container -m shell -a "service nova-scheduler restart"
+ansible compute_hosts -m shell -a "service nova-compute restart"
+
+## Neutron
+ansible neutron_server_container -m shell -a "sed -i 's+^auth_url = http://172.30.238.2:35357+auth_url = http://<admin region IP>:35357+' /etc/neutron/neutron.conf"
+ansible neutron_server_container -m shell -a "sed -i 's+^auth_uri = http://172.30.238.2:5000+auth_uri = http://<admin region IP>:5000+' /etc/neutron/neutron.conf"
+
+ansible neutron_server_container -m shell -a "service neutron-server restart"
+
+## Heat
+ansible heat_apis_container -m shell -a "sed -i 's+^auth_uri = http://172.30.238.2:5000+auth_uri = http://<admin region IP>:5000+' /etc/heat/heat.conf"
+ansible heat_apis_container -m shell -a "sed -i 's+^auth_uri = http://172.30.238.2:5000/v3+auth_uri = http://<admin region IP>:5000/v3+' /etc/heat/heat.conf"
+ansible heat_apis_container -m shell -a "sed -i 's+^auth_url = http://172.30.238.2:35357+auth_url = http://<admin region IP>:35357+' /etc/heat/heat.conf"
+
+ansible heat_engine_container -m shell -a "sed -i 's+^auth_uri = http://172.30.238.2:5000+auth_uri = http://<admin region IP>:5000+' /etc/heat/heat.conf"
+ansible heat_engine_container -m shell -a "sed -i 's+^auth_uri = http://172.30.238.2:5000/v3+auth_uri = http://<admin region IP>:5000/v3+' /etc/heat/heat.conf"
+ansible heat_engine_container -m shell -a "sed -i 's+^auth_url = http://172.30.238.2:35357+auth_url = http://<admin region IP>:35357+' /etc/heat/heat.conf"
+
+ansible heat_apis_container -m shell -a "service heat-api restart"
+ansible heat_engine_container -m shell -a "service heat-engine restart"
+
+

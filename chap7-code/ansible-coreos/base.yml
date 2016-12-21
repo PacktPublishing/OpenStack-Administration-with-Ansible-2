@@ -1,0 +1,47 @@
+---
+# This playbook deploys the ELK stack on CoreOS
+
+- name: Bootstrap CoreOS
+  hosts: coreos
+  gather_facts: False
+  roles:
+    - defunctzombie.coreos-bootstrap
+
+- name: Deploy ELK Stack
+  hosts: coreos
+  remote_user: core
+  become: false
+  tasks:
+    - name: Start etcd
+      service: name=etcd.service state=started
+      become: true
+
+    - name: Install docker-py
+      shell: /home/core/bin/pip install docker-py==1.9.0 docker-compose==1.8.0
+
+    - name: Pull Elasticsearch container
+      docker_image: name=elasticsearch
+
+    - name: Pull Kibana container
+      docker_image: name=kibana
+      
+    - name: Pull Logstash container
+      docker_image: name=logstash
+
+    - name: Launch Elasticsearch container
+      docker_container:
+        name: elasticsearch-cont
+        image: elasticsearch
+        state: started
+
+    - name: Launch Kibana container
+      docker_container:
+        name: kibana-cont
+        image: kibana
+        state: started
+        
+    - name: Launch Logstash container
+      docker_container:
+        name: logstash-cont
+        image: logstash
+        state: started

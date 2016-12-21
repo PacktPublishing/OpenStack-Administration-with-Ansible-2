@@ -1,0 +1,5 @@
+---
+endpointname: [ 'glance', 'nova', 'neutron', 'heat' ] 
+regionname: alpha
+endpointtype: internal
+endpointurl: [ 'http://<alpha region IP>:9292', 'http://<alpha region IP>:8774/v2.1/%\(tenant_id\)s', 'http://<alpha region IP>:9696', 'http://<alpha region IP>:8004/v1/%\(tenant_id\)s' ]

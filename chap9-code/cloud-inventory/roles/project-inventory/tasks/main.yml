@@ -1,0 +1,13 @@
+---
+- name: Create working directory
+  file: path={{ REPORT_DIR }} state=directory
+  ignore_errors: yes
+
+- name: Copy the tenant_report script
+  copy: src=project_report.sql dest=/usr/share mode=0755
+  
+- name: Add report header
+  shell: ( echo "+-------------------------+"; echo "| Cloud Project Report     |"; echo "+-------------------------+"; ) >> {{ REPORT_DIR }}/os_report_{{ lookup('pipe', 'date +%Y%m%d') }}.log 
+
+- name: Execute tenant report
+  shell: chdir=/usr/bin mysql -u root --password={{ MYSQLPASS }} --table < /usr/share/project_report.sql >> {{ REPORT_DIR }}/os_report_{{ lookup('pipe', 'date +%Y%m%d') }}.log

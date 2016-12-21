@@ -1,0 +1,2 @@
+cfg_dir=/etc/nagios3/global
+cfg_dir=/etc/nagios3/Default_collector

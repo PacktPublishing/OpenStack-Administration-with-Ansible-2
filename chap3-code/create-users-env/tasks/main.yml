@@ -1,0 +1,48 @@
+---
+
+- name: Install random password generator package
+  apt: name={{item}} state=present
+  with_items:
+   - apg
+
+- name: Random generate passwords
+  command: apg -n {{ pass_cnt }} -M NCL -q
+  register: passwdss
+
+- name: Create users
+  os_user:
+    cloud: "{{CLOUD_NAME}}"
+    state: present
+    name: "{{ item.0 }}"
+    password: "{{ item.1 }}"
+    domain: default
+  with_together:
+    - "{{userid}}"
+    - "{{passwdss.stdout_lines}}"
+
+- name: Create user environments
+  os_project:
+    cloud: "{{CLOUD_NAME}}"
+    state: present
+    name: "{{ item }}"
+    description: "{{ item }}"
+    domain_id: default
+    enabled: True
+  with_items: "{{tenantid}}"
+
+- name: Assign user to specified role in designated environment
+  os_user_role:
+    cloud: "{{CLOUD_NAME}}"
+    user: "{{ item.0 }}"
+    role: "{{ urole }}"
+    project: "{{ item.1 }}"
+  with_together: 
+    - "{{userid}}"
+    - "{{tenantid}}"
+    
+- name: User password assignment
+  debug: msg="User {{ item.0 }} was added to {{ item.2 }} project, with the assigned password of {{ item.1 }}"
+  with_together:
+    - userid
+    - passwdss.stdout_lines
+    - tenantid

@@ -1,0 +1,10 @@
+---
+
+- name: Register the region service endpoints on the Admin region
+  shell: openstack --os-cloud="{{ CLOUD_NAME }}"
+         service endpoint create --region "{{ item.1 }}" "{{ item.0 }}" "{{ item.2 }}" "{{ item.3 }}"
+  with_together:
+    - "{{endpointname}}"
+    - "{{regionname}}"
+    - "{{endpointtype}}"
+    - "{{endpointurl}}"

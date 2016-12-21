@@ -1,0 +1,3 @@
+---
+qoptions: [ '--cores=30', '--cores=30', '--cores=30', '--instances=20', '--instances=20', '--instances=20', '--instances=20', '--instances=20', '--instances=20', '--instances=20', '--cores=20' ]
+tenantname: [ 'MRKT-Proj01', 'MRKT-Proj02', 'MRKT-Proj03', 'MRKT-Proj04', 'MRKT-Proj05', 'MRKT-Proj06', 'MRKT-Proj07', 'MRKT-Proj08', 'MRKT-Proj09', 'MRKT-Proj10', 'MRKT-Proj10' ]

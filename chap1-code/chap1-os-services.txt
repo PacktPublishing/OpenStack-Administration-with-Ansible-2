@@ -1,0 +1,40 @@
+## List OpenStack Services
+
+### Via API
+$ curl -d @credentials.json –X POST -H "Content-Type: application/json" http://127.0.0.1:5000/v3/auth/tokens | python -mjson.tool
+
+#### Authorization string
+{    "auth": {        "identity": {            "methods": [                "password"            ],            "password": {                "user": {                    "name": "admin",                    "domain": {                        "id": "default"                    },                    "password": "passwd"                }            }        }    }}
+
+#### HTTP Header Output
+HTTP/1.1 201 CreatedDate: Tue, 20 Sep 2016 21:20:02 GMTServer: ApacheX-Subject-Token: gAAAAABX4agC32nymQSbku39x1QPooKDpU2T9oPYapF6ZeY4QSA9EOqQZ8PcKqMT2j5m9uvOtC9c8d9szObciFr06stGo19tNueHDfvHbgRLFmjTg2k8Scu1Q4esvjbwth8aQ-qMSe4NRTWmD642i6pDfk_AIIQCNAVary: X-Auth-Tokenx-openstack-request-id: req-8de6fa59-8256-4a07-b040-c21c4aee6064Content-Length: 283Content-Type: application/json
+#### API Request
+$ curl -X GET http://127.0.0.1:35357/v3/services -H "Accept: application/json" -H "X-Auth-Token: 907ca229af164a09918a661ffa224747" | python -mjson.tool
+
+#### JSON Output
+{    "links": {        "next": null,        "previous": null,        "self": "http://example.com/identity/v3/services"    },    "services": [        {            "description": "Nova Compute Service",            "enabled": true,            "id": "1999c3a858c7408fb586817620695098",            "links": {                "...            },            "name": "nova",            "type": "compute"        },        {            "description": "Cinder Volume Service V2",            "enabled": true,            "id": "39216610e75547f1883037e11976fc0f",            "links": {                "...            },            "name": "cinderv2",            "type": "volumev2"        },...
+### Via CLI
+
+#### OpenRC v2.0 file example
+# To use an OpenStack cloud you need to authenticate against keystone.
+export OS_ENDPOINT_TYPE=internalURL
+export OS_USERNAME=admin
+export OS_TENANT_NAME=admin
+export OS_AUTH_URL=http://127.0.0.1:5000/v2.0
+
+# With Keystone you pass the keystone password.
+echo "Please enter your OpenStack Password: "
+read -sr OS_PASSWORD_INPUT
+export OS_PASSWORD=$OS_PASSWORD_INPUT
+
+
+#### OpenRC v3.0 file example
+# *NOTE*: Using the 3 *Identity API* does not necessarily mean any other# OpenStack API is version 3. For example, your cloud provider may implement# Image API v1.1, Block Storage API v2, and Compute API v2.0. OS_AUTH_URL is# only for the Identity API served through keystone.export OS_AUTH_URL=http://172.29.238.2:5000/v3# With the addition of Keystone we have standardized on the term **project**# as the entity that owns the resources.export OS_PROJECT_ID=5408dd3366e943b694cae90a04d71c88export OS_PROJECT_NAME="admin"export OS_USER_DOMAIN_NAME="Default"if [ -z "$OS_USER_DOMAIN_NAME" ]; then unset OS_USER_DOMAIN_NAME; fi# unset v2.0 items in case setunset OS_TENANT_IDunset OS_TENANT_NAME# In addition to the owning entity (tenant), OpenStack stores the entity# performing the action as the **user**.export OS_USERNAME="admin"# With Keystone you pass the keystone password.echo "Please enter your OpenStack Password: "read -sr OS_PASSWORD_INPUTexport OS_PASSWORD=$OS_PASSWORD_INPUT# If your configuration has multiple regions, we set that information here.# OS_REGION_NAME is optional and only valid in certain environments.export OS_REGION_NAME="RegionOne"# Don't leave a blank variable, unset it if it was emptyif [ -z "$OS_REGION_NAME" ]; then unset OS_REGION_NAME; fi
+
+
+#### CLI commands
+$ source openrc
+$ keystone service-list
+OR
+$ openstack service list
+

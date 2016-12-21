@@ -1,0 +1,5 @@
+# Here are variables related to the install
+
+DB_NAME: NCONF_DB
+DB_USER: root
+DB_PASS: passwd

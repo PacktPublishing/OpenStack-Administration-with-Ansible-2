@@ -1,0 +1,14 @@
+---
+# This playbook deploys components needed for Infrastructure hosts and containers. 
+
+- hosts: all_containers
+  remote_user: root
+  become: true
+  roles:
+    - snmp-config
+    
+- hosts: hosts
+  remote_user: root
+  become: true
+  roles:
+    - snmp-config

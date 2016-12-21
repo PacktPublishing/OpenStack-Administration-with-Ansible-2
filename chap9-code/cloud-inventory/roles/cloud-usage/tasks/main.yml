@@ -1,0 +1,20 @@
+---
+- name: Create working directory
+  file: path="{{ REPORT_DIR }}" state=directory
+  ignore_errors: yes
+  
+- name: Retrieve projectIDs
+  shell: openstack --os-cloud="{{ CLOUD_NAME }}"
+         project list | awk 'NR > 3 { print $2 }'
+  register: tenantid
+
+- name: Add report header
+  shell: ( echo "+------------------------------------+"; echo "| Project Usage Report                |"; echo "| Created at {{ lookup('pipe', 'date +%Y-%m-%d%t%X') }}  |"; echo "+------------------------------------+"; echo " "; ) >> {{ REPORT_DIR }}/os_usage_report_{{ lookup('pipe', 'date +%Y%m%d') }}.log 
+
+- name: Record project usage
+  shell: ( echo "Project - {{ item }}" && openstack --os-cloud="{{ CLOUD_NAME }}"
+         usage show --start {{ RPTSTART }} --end {{ RPTEND }} --project {{ item }} && echo " " ) >> {{ REPORT_DIR }}/os_usage_report_{{ lookup('pipe', 'date +%Y%m%d') }}.log
+  with_items: "{{ tenantid.stdout_lines }}"
+
+- name: Retrieve project usage report file
+  fetch: src={{ REPORT_DIR }}/os_usage_report_{{ lookup('pipe', 'date +%Y%m%d') }}.log dest={{ REPORT_DEST }} flat=yes

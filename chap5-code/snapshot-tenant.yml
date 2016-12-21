@@ -1,0 +1,8 @@
+---
+# This playbook used to demo OpenStack Newton user, role, image and volume features. 
+
+- hosts: util_container
+  remote_user: root
+  become: true
+  roles:
+    - create-snapshot

@@ -1,0 +1,29 @@
+---
+
+- name: Create users
+  os_user:
+    cloud: "{{CLOUD_NAME}}"
+    state: present
+    name: "{{ item.0 }}"
+    password: "{{ item.1 }}"
+    default_project: "{{ servicesproject }}"
+    domain: default
+  with_together:
+    - "{{userid}}"
+    - "{{passwdss}}"
+
+- name: Assign user to specified role in designated environment
+  os_user_role:
+    cloud: "{{CLOUD_NAME}}"
+    user: "{{ item.0 }}"
+    role: "{{ urole }}"
+    project: "{{ servicesproject }}"
+  with_together: 
+    - "{{userid}}"
+    
+- name: Register the new services on the Admin region
+  shell: openstack --os-cloud="{{ CLOUD_NAME }}"
+         service create --name "{{ item.0 }}" --description "{{ item.1 }}" "{{ servicetype }}"
+  with_together:
+    - "{{userid}}"
+    - "{{descrip}}"

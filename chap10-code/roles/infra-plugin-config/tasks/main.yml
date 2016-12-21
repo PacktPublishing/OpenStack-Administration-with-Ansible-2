@@ -1,0 +1,42 @@
+---
+
+- name: Install additional packages
+  apt: name={{item}} state=present
+  with_items:
+   - libnet-snmp-perl
+   
+- name: Create bin directory 
+  file: path=/home/"{{ USER }}"/bin state=directory
+  ignore_errors: yes
+
+- name: Fix libcrypto link 
+  command: chdir=/lib/x86_64-linux-gnu ln -s libcrypto.so.1.0.0 libcrypto.so.6
+  ignore_errors: yes
+  
+- name: Fix libssl link 
+  command: chdir=/lib/x86_64-linux-gnu ln -s libssl.so.1.0.0 libssl.so.6
+  ignore_errors: yes
+  
+- name: Copy nagios plugins
+  copy: src=check_http dest=/home/"{{ USER }}"/bin
+  
+- name: Copy nagios plugins
+  copy: src=check_port.pl dest=/home/"{{ USER }}"/bin
+  
+- name: Copy nagios plugins
+  copy: src=check_snmp_process.pl dest=/home/"{{ USER }}"/bin
+  
+- name: Copy nagios plugins
+  copy: src=show_users dest=/home/"{{ USER }}"/bin
+  
+- name: Copy perl utils
+  copy: src=utils.pm dest=/etc/perl
+  
+- name: Copy perl utils
+  copy: src=utils.sh dest=/etc/perl
+  
+- name: Confirm plugin file permissions 
+  file: path=/home/nagios/bin/check* mode=0777
+
+- name: Confirm plug file ownership 
+  file: path=/home/nagios/bin owner=nagios group=nagios recurse=yes

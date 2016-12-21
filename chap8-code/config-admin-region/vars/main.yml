@@ -1,0 +1,8 @@
+---
+userid: [ 'glance', 'nova', 'neutron', 'heat' ]
+passwdss: [ 'passwd', 'passwd', 'passwd', 'passwd' ]
+descrip: [ 'Glance Image Service', 'Nova Compute Service', 'Neutron Network Service', 'Heat Orchestration Service' ]
+servicetype: [ 'image', 'compute', 'network', 'orchestration' ]
+
+servicesproject: service
+urole: admin

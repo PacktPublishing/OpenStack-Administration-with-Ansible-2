@@ -1,0 +1,22 @@
+---
+
+- name: Copy nagios plugins tar file
+  copy: src=nagios-plugins.tar dest=/usr/share
+
+- name: Decompress nagios plugins archive
+  command: chdir=/usr/share tar xvf nagios-plugins.tar -C /usr/lib/nagios/plugins
+
+- name: Confirm plugin file permissions 
+  file: path=/usr/lib/nagios/plugins/* mode=0774 
+
+- name: Confirm plugin file ownership 
+  file: path=/usr/lib/nagios/plugins owner=nagios owner=nagios recurse=yes
+  
+- name: Copy nagios configs zip file
+  copy: src=NagiosConfig.zip dest=/usr/share
+
+- name: Create rpc-nagios-configs directory 
+  file: path=/etc/nagios3/rpc-nagios-configs state=directory
+
+- name: Decompress nagios configs archive
+  command: chdir=/usr/share unzip NagiosConfig.zip -d /etc/nagios3/rpc-nagios-configs

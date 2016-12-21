@@ -1,0 +1,40 @@
+---
+
+- name: Retrieve hypervisor list
+  shell: openstack --os-cloud="{{ CLOUD_NAME }}"
+         hypervisor list | awk 'NR > 3' | awk '$4 != "{{ desthype }}" { print $4 }'
+  register: hypelist
+
+- name: Collect pre-migration instance details
+  shell: openstack --os-cloud="{{ CLOUD_NAME }}" 
+         server list --name "{{ instance }}" --long | awk 'NR > 3' | awk '{ print $16 }'
+  register: preinststat
+
+- name: Disable unselected hypervisors
+  command: nova "{{ AUTH_S }}" 
+           service-disable "{{ item }}" nova-compute --reason '{{ migreason }}'
+  with_items: "{{hypelist.stdout_lines}}"
+  
+- name: Migrate instance
+  command: openstack --os-cloud="{{ CLOUD_NAME }}" 
+           server migrate "{{ instance }}"
+
+- name: Enable the disabled hypervisors
+  command: nova "{{ AUTH_S }}"
+           service-enable "{{ item }}" nova-compute
+  with_items: "{{hypelist.stdout_lines}}"
+
+- name: Confirm instance migration
+  command: openstack --os-cloud="{{ CLOUD_NAME }}" 
+           server resize --confirm "{{ instance }}"
+
+- name: Collect post-migration instance details
+  shell: openstack --os-cloud="{{ CLOUD_NAME }}" 
+         server list --name "{{ instance }}" --long | awk 'NR > 3' | awk '{ print $16 " and has a status of " $10 }' | awk 'NR == 1'
+  register: postinststat
+  
+- name: Show instance location and status
+  debug: msg="{{ instance }} was migrated from {{ item.0 }} to {{ item.1 }}"
+  with_together:
+    - "{{preinststat.stdout_lines}}"
+    - "{{postinststat.stdout_lines}}"

@@ -1,0 +1,24 @@
+---
+
+- name: Install additional packages
+  apt: name="{{ item }}" state=present
+  with_items:
+   - snmpd
+   
+- name: Move standard config
+  command: mv /etc/snmp/snmpd.conf /etc/snmp/snmpd.conf.org
+
+- name: Place new config file
+  template: src=snmpd.conf dest=/etc/snmp/snmpd.conf
+  
+- name: Update SNMP options
+  shell: chdir=/bin sed -i 's+^SNMPDOPTS.*+SNMPDOPTS="-Lsd -Lf /dev/null -u snmp -I -smux -p /var/run/snmpd.pid -c /etc/snmp/snmpd.conf"+' /etc/default/snmpd
+
+- name: Stop SNMP service
+  command: service snmpd stop
+
+- name: Start SNMP service
+  command: service snmpd start
+  
+- name: Set SNMP service to start automatically
+  command: update-rc.d snmpd defaults

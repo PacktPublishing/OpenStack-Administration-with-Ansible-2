@@ -1,0 +1,30 @@
+---
+
+- name: Install additional packages
+  apt: name={{item}} state=present
+  with_items:
+   - vim
+   - nagios3
+   - unzip
+
+- name: Backup Nagios config files
+  command: cp -r /etc/nagios3 /etc/nagios3.backup
+  
+- name: Check Nagios service
+  shell: ps -ef |grep nagios3
+
+- name: Create user .ssh directory 
+  file: path=/var/lib/nagios/.ssh state=directory
+  ignore_errors: yes
+
+- name: Copy SSH private keys
+  copy: src=id_dsa dest=/var/lib/nagios/.ssh mode=0600
+  
+- name: Copy SSH public keys
+  copy: src=id_dsa.pub dest=/var/lib/nagios/.ssh mode=0644
+  
+- name: Copy nagios Ubuntu logo archive
+  copy: src=nagios-ubuntu-logo.tar dest=/usr/share
+  
+- name: Decompress nagios Ubuntu logo archive
+  command: chdir=/usr/share tar xvf nagios-ubuntu-logo.tar -C /usr/share/nagios/htdocs/images/logos/base

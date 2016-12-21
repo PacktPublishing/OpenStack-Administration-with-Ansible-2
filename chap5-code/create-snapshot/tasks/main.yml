@@ -1,0 +1,18 @@
+---
+
+- name: Retrieve project ID
+  shell: openstack --os-cloud="{{ CLOUD_NAME }}"
+         project list | awk '/ "{{tenantname}}" / { print $2 }'
+  register: tenantid
+
+- name: Retrieve instance id from project
+  shell: openstack --os-cloud="{{ CLOUD_NAME }}"
+         server list --all-projects --project "{{ tenantid.stdout }}" | awk 'NR > 3 { print $2 }'
+  register: instid
+
+- name: Create instance snapshot
+  command: openstack --os-cloud="{{ CLOUD_NAME }}" 
+           server image create --name="{{ tenantname }}"-snap-"{{ item }}" "{{ item }}" 
+  with_items: "{{instid.stdout_lines}}"
+  register: command_result
+  failed_when: "'_info' not in command_result.stderr"

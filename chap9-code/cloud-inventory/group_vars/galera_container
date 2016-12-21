@@ -1,0 +1,6 @@
+# Here are variables related globally to the galera_container host group
+
+MYSQLPASS: passwd
+COMPANY: Rackspace RPC
+REPORT_DIR: /usr/share/os-report
+REPORT_DEST: /usr/share/

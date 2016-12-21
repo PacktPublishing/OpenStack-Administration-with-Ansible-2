@@ -1,0 +1,11 @@
+# Here are variables related globally to the util_container host group
+
+CLOUD_NAME: default
+
+AUTH_S: --os-username {{ OS_USERNAME }} --os-password {{ OS_PASSWORD }} --os-project-name {{ OS_TENANT_NAME }} —-os-domain-name {{ OS_DOMAIN_NAME }} —-os-auth-url {{ OS_AUTH_URL }}
+
+OS_USERNAME: admin
+OS_PASSWORD: passwd
+OS_TENANT_NAME: admin
+OS_DOMAIN_NAME: default
+OS_AUTH_URL: http://172.29.238.2:5000/v3
